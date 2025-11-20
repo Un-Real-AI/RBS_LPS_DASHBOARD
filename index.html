@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RBS LPS Dashboard</title>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #0f172a, #111827);
+      --panel: rgba(17, 24, 39, 0.85);
+      --accent: #38bdf8;
+      --accent-2: #a855f7;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --card-radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      background-attachment: fixed;
+    }
+    header { padding: 22px 28px 8px; }
+    h1 {
+      margin: 0 0 6px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .surface {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--card-radius);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+      overflow: hidden;
+    }
+    .view-shell { margin: 0 24px 12px; padding: 0; background: none; border: none; box-shadow: none; }
+    .view-tabs { display: inline-flex; gap: 6px; padding: 0; border-radius: 999px; background: none; }
+    .tabs-shell { margin: 0 24px 16px; }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      padding: 14px 18px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: #0b1021;
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
+    }
+    .container { padding: 22px 28px 40px; display: grid; gap: 26px; }
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      height: 68px; /* fixed height so map and treemap bodies start aligned */
+    }
+    .main-layout { display: grid; gap: 16px; }
+    .split-layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.05fr) minmax(360px, 1fr);
+      gap: 18px;
+      padding: 10px 20px 22px;
+      align-items: start;
+    }
+    .overview { padding: 18px 20px 22px; }
+    .overview-frame { height: 340px; }
+    .map { height: 520px; }
+    .od-panel { height: 520px; position: relative; }
+    .sankey { height: 760px; position: relative; padding: 18px 20px 22px; }
+    .segmented {
+      display: inline-flex;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      min-width: 120px;
+      text-align: center;
+    }
+    .pill:hover { background: rgba(255, 255, 255, 0.12); }
+    .pill.active {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: #0b1021;
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
+    }
+    .frame-wrap {
+      box-sizing: border-box;
+      height: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+      padding: 10px 18px 12px 12px; /* leave space for legends on the right */
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #ffffff;
+      border-radius: 12px;
+    }
+    .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .validation { padding: 18px 20px 22px; }
+    .validation-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .val-frame { height: 520px; }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .metric-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: grid;
+      gap: 6px;
+    }
+    .metric-title { font-weight: 700; font-size: 0.95rem; }
+    .metric-highlight { color: var(--accent); font-weight: 700; }
+    .metric-line { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.92rem; }
+    .metric-notes { margin-top: 12px; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+    .metric-notes strong { color: var(--text); }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) {
+      .sankey { height: 520px; }
+      .map, .od-panel { height: 380px; }
+      .split-layout { grid-template-columns: 1fr; padding: 14px 16px 18px; }
+      .container { padding: 16px 18px 28px; gap: 20px; }
+      .tabs-shell { margin: 0 14px 12px; }
+      .tabs { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RBS LPS Dashboard</h1>
+    <p class="subtitle">Explore demand vs transformed demand, stop and OD flows across service variants.</p>
+  </header>
+
+  <div class="surface tabs-shell">
+    <div class="tabs" id="family-tabs"></div>
+  </div>
+
+  <div class="view-shell">
+    <div class="view-tabs">
+      <button class="pill" id="view-dashboard">Dashboard</button>
+      <button class="pill" id="view-validation">Validation</button>
+    </div>
+  </div>
+
+  <div class="container" id="dashboard-container">
+    <div class="surface overview">
+      <div class="panel-title">
+        <span>Line Potential Score Comparison</span>
+      </div>
+      <div class="overview-frame">
+        <div class="frame-wrap">
+          <iframe src="charts/RBS_LPS_Comparison.html" title="LPS comparison"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface split-layout">
+      <div class="panel map-panel">
+        <div class="panel-title">Service Map</div>
+        <div class="map">
+          <div class="frame-wrap">
+            <iframe id="service-map" title="Service map"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="panel od-panel">
+        <div class="panel-title">
+          <span>OD Treemap</span>
+          <div class="segmented">
+            <button class="pill" id="od-stop">Stop OD</button>
+            <button class="pill" id="od-town">Town OD</button>
+          </div>
+        </div>
+        <div class="frame-wrap">
+          <iframe id="od-frame" title="OD treemap"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface sankey">
+      <div class="panel-title">
+        <span>Demand Flow (Sankey)</span>
+        <div class="segmented">
+          <button class="pill" id="mode-lps">LPS (umgewandelte Nachfrage)</button>
+          <button class="pill" id="mode-total">Total Demand (Nachfrage)</button>
+        </div>
+      </div>
+      <div class="frame-wrap">
+        <iframe id="sankey-frame" title="Demand flow"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class="container hidden" id="validation-container">
+    <div class="surface validation">
+      <div class="panel-title">
+        <span>Validation</span>
+      </div>
+      <div class="validation-grid">
+        <div class="frame-wrap val-frame">
+          <iframe src="charts/Einsteiger_RBS_LPS_vs_ground_truth.html" title="Einsteiger vs Ground Truth"></iframe>
+        </div>
+        <div class="frame-wrap val-frame">
+          <iframe src="charts/Austeiger_RBS_LPS_vs_ground_truth.html" title="Austeiger vs Ground Truth"></iframe>
+        </div>
+      </div>
+      <div class="metrics-grid" id="metrics-grid"></div>
+      <div class="metric-notes">
+        <div><strong>R²</strong>: overall fit (1.0 = perfect alignment).</div>
+        <div><strong>Slope</strong>: bias of predicted vs. observed (1.0 = unbiased).</div>
+        <div><strong>MAE</strong>: average absolute error in passengers.</div>
+        <div><strong>MSE</strong>: squared error; penalizes larger misses.</div>
+        <div><strong>n</strong>: number of stops used in the fit.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Families available and their display names.
+    const FAMILY_OPTIONS = [
+      { id: "Both_RE5", label: "Both RE5" },
+      { id: "Worblaufen_RE5", label: "Worblaufen RE5" },
+      { id: "Zollikofen_RE5", label: "Zollikofen RE5" },
+      { id: "RE5", label: "RE5" },
+    ];
+
+    // Time suffix used for the line charts.
+    const TIME_SUFFIX = "07:01:00_07:16:00_07:31:00_07:46:00";
+
+    // Fallback metrics when running from file:// or if fetch fails.
+    const METRIC_FALLBACK = {
+      r1: {
+        metrics: {
+          Einsteiger: {
+            n: 6, MSE: 15076.659645929096, MAE: 100.50048165736075, R2: 0.9936274455507619,
+            slope: 1.0042265170276192, intercept: -2.5338470959719253,
+          },
+          Aussteiger: {
+            n: 7, MSE: 22171.427658944485, MAE: 122.96197757377217, R2: 0.9728888459285259,
+            slope: 0.9624112533924412, intercept: 33.283198644944704,
+          },
+        },
+      },
+      r2: {
+        metrics: {
+          Einsteiger: {
+            n: 7, MSE: 28293.86403380242, MAE: 132.64721164294437, R2: 0.9671494105975825,
+            slope: 1.0821714165467977, intercept: -5.021882316814374,
+          },
+          Aussteiger: {
+            n: 7, MSE: 42650.3943726787, MAE: 158.4662639119962, R2: 0.976144240844115,
+            slope: 0.9066759728225621, intercept: 122.86424115096158,
+          },
+        },
+      },
+    };
+
+    const state = {
+      view: "dashboard",
+      family: FAMILY_OPTIONS[0].id,
+      mode: "lps", // "lps" uses logit_... (transformed demand), "total" uses raw demand
+      odView: "stop", // "stop" or "town"
+    };
+
+    const tabsShell = document.querySelector(".tabs-shell");
+    const tabsEl = document.getElementById("family-tabs");
+    const mapFrame = document.getElementById("service-map");
+    const sankeyFrame = document.getElementById("sankey-frame");
+    const odFrame = document.getElementById("od-frame");
+    const odStopBtn = document.getElementById("od-stop");
+    const odTownBtn = document.getElementById("od-town");
+    const modeLpsBtn = document.getElementById("mode-lps");
+    const modeTotalBtn = document.getElementById("mode-total");
+    const viewDashboardBtn = document.getElementById("view-dashboard");
+    const viewValidationBtn = document.getElementById("view-validation");
+    const dashboardContainer = document.getElementById("dashboard-container");
+    const validationContainer = document.getElementById("validation-container");
+    const metricsGrid = document.getElementById("metrics-grid");
+
+    function chartPath(kind) {
+      switch (kind) {
+        case "service": return `maps/${state.family}_service_map.html`;
+        case "sankey":
+          if (state.mode === "lps") {
+            return `charts/logit_${state.family}_line_more_than_0_trips_O&D_${TIME_SUFFIX}.html`;
+          }
+          return `charts/${state.family}_line_more_than_0_trips_O&D_${TIME_SUFFIX}.html`;
+        case "od":
+          return state.odView === "stop"
+            ? `charts/Stop_OD_${state.family}_treemap.html`
+            : `charts/Logit_OD_${state.family}_treemap.html`;
+        default: return "";
+      }
+    }
+
+    function renderTabs() {
+      tabsEl.innerHTML = "";
+      FAMILY_OPTIONS.forEach((fam) => {
+        const btn = document.createElement("button");
+        btn.className = `tab${fam.id === state.family ? " active" : ""}`;
+        btn.textContent = fam.label;
+        btn.onclick = () => {
+          state.family = fam.id;
+          loadFrames();
+          renderTabs();
+        };
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function loadFrames() {
+      mapFrame.src = chartPath("service");
+      sankeyFrame.src = chartPath("sankey");
+      odFrame.src = chartPath("od");
+      modeLpsBtn.classList.toggle("active", state.mode === "lps");
+      modeTotalBtn.classList.toggle("active", state.mode === "total");
+      odStopBtn.classList.toggle("active", state.odView === "stop");
+      odTownBtn.classList.toggle("active", state.odView === "town");
+    }
+
+    function setView(view) {
+      state.view = view;
+      const isDashboard = view === "dashboard";
+      viewDashboardBtn.classList.toggle("active", isDashboard);
+      viewValidationBtn.classList.toggle("active", !isDashboard);
+      dashboardContainer.classList.toggle("hidden", !isDashboard);
+      validationContainer.classList.toggle("hidden", isDashboard);
+      tabsShell.classList.toggle("hidden", !isDashboard);
+      if (isDashboard) {
+        loadFrames();
+      } else if (!metricsGrid.dataset.loaded) {
+        loadValidationMetrics();
+      }
+    }
+
+    function renderMetrics(data) {
+      const rows = [
+        { title: "Einsteiger (r1)", m: data.r1.metrics.Einsteiger },
+        { title: "Aussteiger (r1)", m: data.r1.metrics.Aussteiger },
+        { title: "Einsteiger (r2)", m: data.r2.metrics.Einsteiger },
+        { title: "Aussteiger (r2)", m: data.r2.metrics.Aussteiger },
+      ];
+      const fmt = (v, d = 3) => (typeof v === "number" ? v.toFixed(d) : "—");
+      metricsGrid.innerHTML = rows.map(({ title, m }) => `
+        <div class="metric-card">
+          <div class="metric-title">${title}</div>
+          <div class="metric-line"><span>R²</span><span class="metric-highlight">${fmt(m.R2, 3)}</span></div>
+          <div class="metric-line"><span>Slope</span><span class="metric-highlight">${fmt(m.slope, 3)}</span></div>
+          <div class="metric-line"><span>MAE</span><span class="metric-highlight">${fmt(m.MAE, 1)}</span></div>
+          <div class="metric-line"><span>n</span><span>${fmt(m.n, 0)}</span></div>
+          <div class="metric-line"><span>MSE</span><span>${fmt(m.MSE, 1)}</span></div>
+        </div>
+      `).join("");
+      metricsGrid.dataset.loaded = "true";
+    }
+
+    async function loadValidationMetrics() {
+      const useFallback = () => {
+        renderMetrics(METRIC_FALLBACK);
+      };
+      try {
+        if (location.protocol === "file:") {
+          return useFallback();
+        }
+        const res = await fetch("data/re5_results.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        renderMetrics(json);
+      } catch (err) {
+        console.warn("Falling back to embedded metrics:", err);
+        useFallback();
+      }
+    }
+
+    modeLpsBtn.addEventListener("click", () => {
+      state.mode = "lps";
+      loadFrames();
+    });
+
+    modeTotalBtn.addEventListener("click", () => {
+      state.mode = "total";
+      loadFrames();
+    });
+
+    odStopBtn.addEventListener("click", () => {
+      state.odView = "stop";
+      loadFrames();
+    });
+
+    odTownBtn.addEventListener("click", () => {
+      state.odView = "town";
+      loadFrames();
+    });
+
+    viewDashboardBtn.addEventListener("click", () => setView("dashboard"));
+    viewValidationBtn.addEventListener("click", () => setView("validation"));
+
+    renderTabs();
+    loadFrames();
+    setView("dashboard");
+  </script>
+</body>
+</html>
