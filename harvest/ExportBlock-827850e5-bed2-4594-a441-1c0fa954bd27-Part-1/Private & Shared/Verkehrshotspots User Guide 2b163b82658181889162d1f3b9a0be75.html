@@ -1,0 +1,717 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Verkehrshotspots: User Guide</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2b163b82-6581-8188-9162-d1f3b9a0be75" class="page sans"><header><div class="page-header-icon undefined"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><h1 class="page-title">Verkehrshotspots: User Guide</h1><p class="page-description"></p></header><div class="page-body"><div><p id="1c863b82-6581-8091-b04f-d16e27fdf053" class="">Die analysierten Top-Arbeitgeberverkehrshotspots werden in 42hacks Company Analyzer dargestellt. Der in diesen interaktiven Bericht integrierte Company Cockpit st derzeit nur in Englisch verfügbar. Dieser kurze deutsche User Guide führt durch die Übersicht, und die Detailansicht des Company Cockpit.</p><h1 id="1c863b82-6581-80c9-881c-f45d1d1993a6" class="">Übersicht</h1><hr id="1c863b82-6581-8044-8f49-f030e7c546a0"/><p id="1c863b82-6581-8069-98e9-c43d75675910" class="">Die tabellarische Übersicht ermöglicht es die wichtigsten Mobilitätsdaten der analysierten Standorte auf einen Blick zu erfassen und zu vergleichen.</p><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Tabelle der Standorte</summary><div class="indented"><figure id="1c863b82-6581-80cd-96e1-d14a1066143e" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image.png"><img style="width:2842px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image.png"/></a><figcaption>Tabellarische Übersicht der analysierten Standorte.</figcaption></figure><p id="1c863b82-6581-808a-ab0d-f773771dfd75" class="">Die tabellarische Übersicht zeigt für jeden Standort die Anzahl Mitarbeitende, die ÖV-Qualität, die Trip- und Pkm-basierten Modal Split Anteile, und die gesamten Pkm pro Wochentag an.</p><p id="1c863b82-6581-8054-ba4d-d00203cd6c05" class="">Die Übersichtwerte beziehen sich jeweils auf das aktuellste, verfügbare Jahr. Andere Jahre lassen sich derzeit nur in der Detailansicht auswerten.</p><hr id="1c863b82-6581-8067-b1af-cb8f3c5bbd89"/><h3 id="1c863b82-6581-80c0-88c0-e661f72e0694" class="">Detailansicht öffnen</h3></div></details><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Sortieren, Filtern und Suchen</summary><div class="indented"><p id="1c863b82-6581-80d8-b02d-eab52b49800c" class="">Die Standorte können beliebig sortiert und gefilter werden. Eine Suchfunktion steht auch zur Verfügung. Die Sort, Filter und Search Symbole befinden sich am rechten oberen Rand der Übersichtstabelle. </p><figure id="1c863b82-6581-8009-9886-d87fceddce5a" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%201.png"><img style="width:336px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%201.png"/></a><figcaption>Die Filter, Sort und Suchsymbole oberhalb der Tabelle.</figcaption></figure></div></details><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Detailansicht öffnen</summary><div class="indented"><figure id="1c863b82-6581-80ac-9389-fd3278532047" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%202.png"><img style="width:384px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%202.png"/></a><figcaption>Mouse-Over über den Firmennamen zeigt ein &lt;Open&gt; Link zur Detailansicht.</figcaption></figure><p id="1c863b82-6581-805d-81a5-cbfa8ac8c651" class="">Wenn die Mouse über den Firmennamen hovert öffnet sich ein &lt;Open&gt; Symbol. Über dieses kann die Detailansicht der Firmenstandorte aufgerufen werden.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-80c0-8324-ea89b164bd07"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_gray.svg"/></div><div style="width:100%"><p id="1c863b82-6581-803b-9d2d-cf1900a36cc7" class="">Die Detailansichten der Standorte lassen sich alternativ auch über den Gallery-View &lt;Details:Arbeitgeber-Verkehrshotspot&gt; öffnen. </p></div></figure></div></details><h1 id="1c863b82-6581-8083-ae79-e89e6f113391" class="">Detailansicht</h1><p id="1c863b82-6581-80a0-b786-f1c3a9474a3c" class="">Die Detailansicht bietet weitere Mobilitäts-Insights für die analysierten Standorte.</p><hr id="1c863b82-6581-8006-8df3-cf18c5824c79"/><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Key Daten</summary><div class="indented"><hr id="1c863b82-6581-80d4-88c2-d8bc6b01cbb4"/><p id="1c863b82-6581-8044-b562-e7165fbe35f7" class="">Das erste Feld der Detailansicht gibt die Standortadresse und Schlüsseldaten wieder:</p><figure id="22163b82-6581-80ae-8b09-da6921fea546" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%203.png"><img style="width:681.982421875px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%203.png"/></a></figure><hr id="1c863b82-6581-8000-833c-f78532fc9a75"/><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Employees (Mitarbeiter)</summary><div class="indented"><p id="1c863b82-6581-8090-9632-e56892326693" class="">
+</p><p id="1c863b82-6581-8055-b251-f0f2df19c1d4" class="">Die Beschäftigtenzahlen stammen aus der aktuellen strukturellen Unternehmensstatistik <a href="https://www.bfs.admin.ch/bfs/en/home/services/geostat/swiss-federal-statistics-geodata/business-employment/structural-business-statistics-statent-from-2011-onwards.html">(STATENT</a>). Die Daten werden jährlich vom Statistischen Bundesamt aktualisiert. Die STATENT-Beschäftigtenzahlen werden auf einem Raster von 100 m2 aufgetragen. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-80ad-9743-f7149ca410e1"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/report_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-80d9-ae0c-c2b1f6f84ab3" class="">Die Mitarbeiterzahlen sind für das allgemeine Gebiet verlässlich, können aber nicht immer exakt auf die Unternehmensstandorte abgebildet werden.</p></div></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-8038-a8f5-ef10eea910e2"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-80a2-b798-c6684d13ded1" class="">Sie können die ausgewählten STATENT-Datenpunkte für Mitarbeiterzahlen auf der Karte <strong>Company Site: Employees </strong>prüfen.</p></div></figure><p id="1c863b82-6581-80f8-9c63-c62f15dc8a72" class="">
+</p><p id="1c863b82-6581-8076-b919-f993928e4d77" class="">
+</p><p id="1c863b82-6581-8051-a265-ed7c0ede01ed" class="">
+</p></div></details><hr id="1c863b82-6581-80ba-9a3a-c43cd2344f24"/><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Daily Commuters (Tägliche Pendler)</summary><div class="indented"><p id="1c863b82-6581-80a4-9eeb-f2380b558cdc" class="">Tägliche Pendler pro Tag verwendet den geschätzten Pendlerfaktor (den Prozentsatz der Mitarbeiter, die an einem durchschnittlichen Arbeitstag zur Arbeit kommen), um zu schätzen, wie viele Mitarbeiter an einem durchschnittlichen Arbeitstag zum Unternehmensstandort pendeln. Diese Zahl ist wichtig für die Berechnung des Infrastrukturbedarfs und der Nachfrage.</p><p id="22163b82-6581-801c-99e1-d2ee74ae6676" class=""><strong>Pendler Faktor </strong></p><p id="22163b82-6581-8069-8c82-f43165a32c28" class="">Der Pendlerfaktor gibt an, wie viel Prozent der Mitarbeiter an einem durchschnittlichen Arbeitstag pendeln, unter Berücksichtigung von Urlaub, Krankheit, Fern- und Teilzeitarbeit. Der Pendlerfaktor wird zur Berechnung der Anzahl der Tagespendler und der Personenkilometer pro Tag verwendet.</p><p id="22163b82-6581-8093-9ad0-d73f09d86669" class="">Der geschätzte Pendlerfaktor für einen Standort wird anhand der Verweildauer (Dwell Time) für den Standort berechnet, die angibt, wie viele Personen sich an einem durchschnittlichen Arbeitstag vor Ort aufhalten. Wenn die verweildauerbasierte Pendlerfaktor Berechnung einen unrealistischen Pendlerfaktor ergibt, wird stattdessen der durchschnittliche Schweizer Pendlerfaktor von 0,71 verwendet.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-80ad-b7bf-ffb80e2765b1"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-8092-aa8e-d41025eaaef9" class="">Die Zahl der Tagespendler weicht von der Gesamtzahl der Beschäftigten ab, da nicht alle Beschäftigten jeden Tag zur Arbeit kommen. </p></div></figure></div></details><hr id="1c863b82-6581-80cc-a410-c157348eac52"/><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Pkm per day</summary><div class="indented"><p id="1c863b82-6581-8010-8725-e3e408832de1" class="">Zeigt die Gesamtzahl der Personenkilometer an, die die Mitarbeiter pro Arbeitstag zum Unternehmensstandort fahren. Die Anzahl der PKm wird mit Hilfe des Pendlerfaktors berechnet. </p></div></details><hr id="1c863b82-6581-801d-86a7-ce4f673a8c47"/><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Potential New Revenue (Potenzialer Neuumsatz)</summary><div class="indented"><p id="22163b82-6581-808f-9094-c98348804cac" class="">Der potenzielle Neuumsatz ist eine grobe Schätzung, die angibt, wie viel zusätzlicher Umsatz im Pendelverkehr an dem Standort mit einem attraktiven Mobilitätskonzept gemacht werden könnte, ohne die bestehende ÖV-Infrastruktur zu verbessern. </p><figure id="22163b82-6581-806c-ad05-d4685e93bb2c" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%204.png"><img style="width:2498px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%204.png"/></a></figure><p id="22163b82-6581-8078-b58e-c5642884c8f5" class="">Für die Berechnung wird die Anzahl der Pendler ermittelt, die heute noch mit dem Auto zur Arbeit kommen, obwohl sie heute schon eine gute ÖV-Alternative zum Auto haben. <br/>Für diese Pendler nehmen wir eine ‘Adoption Rate’ an, die sich aus 42hacks B2B Referenzprojekten ergibt, um zu ermitteln, wie viele Pendler im Rahmen eines attraktiven Mobilitätskonzepts potenziell vom Auto auf den ÖV wechseln würden. Die Anzahl der prognostizierten ‘Wechsler,’ die vom Auto auf den ÖV wechseln, wird mit einem durchschnittlichen Abowert multipliziert, für den wir CHF 1440 annehmen. <br/></p><p id="22163b82-6581-80fb-9bfa-cca0cbeaf7ee" class="">
+</p></div></details><hr id="1c863b82-6581-800f-ae2a-feb39b6403ea"/><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Modal Split Trend</summary><div class="indented"><p id="1c863b82-6581-8015-8618-caef35d9a17d" class="">Der Modal Split Trend gibt an, wie sich der ÖV Modal Split Anteil im vergleich zum Vorjahr entwickelt hat.</p></div></details><h2 id="1c863b82-6581-80e4-84fe-e456861abd1a" class="">Standortkarte (Company Site)</h2><hr id="1c863b82-6581-80da-9dcf-cb12dbba049f"/><figure id="1c863b82-6581-80c7-b458-eea85e0404f3" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%205.png"><img style="width:2140px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%205.png"/></a></figure><p id="1c863b82-6581-80f5-8c71-e2b50880b636" class="">Die Standortkarte zeigt das ausgewählte Polygon für den Standort. .</p><p id="1c863b82-6581-8009-b1c1-d6de3af325e5" class="">Die Karte der Mitarbeiterdaten zeigt die Datenpunkte für Mitarbeiter aus der aktuellsten strukturellen Unternehmensstatistik<a href="https://www.bfs.admin.ch/bfs/en/home/services/geostat/swiss-federal-statistics-geodata/business-employment/structural-business-statistics-statent-from-2011-onwards.html">(STATENT</a>). Das Polygone zeigt an, welche Datenpunkte in die Standortanalyse eingeflossen sind. </p><p id="1c863b82-6581-8082-8c8b-caefd35dbdf0" class="">
+</p></div></details><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Standortkarten (Company Site)</summary><div class="indented"><hr id="1c863b82-6581-8095-b472-f0698ad6cf88"/><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Company Site: Location</summary><div class="indented"><p id="1c863b82-6581-80c9-a229-cdcec2ac6bb6" class="">zeigt das für den Standort analysierte Polygon.</p><figure id="1c863b82-6581-8070-903f-f2be3622ff42" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%206.png"><img style="width:2140px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%206.png"/></a></figure></div></details><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Company Site: Employees</summary><div class="indented"><p id="1c863b82-6581-8099-b35d-c4bc601be8ee" class="">zeigt Datenpunkte aus der aktuellsten strukturellen Unternehmensstatistik (<a href="https://www.bfs.admin.ch/bfs/en/home/services/geostat/swiss-federal-statistics-geodata/business-employment/structural-business-statistics-statent-from-2011-onwards.html">STATENT</a>). Das Polygon zeigt an, welche Datenpunkte in die Standortanalyse einbezogen wurden.</p><figure id="1c863b82-6581-80eb-95d3-de63ca52dfe5" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%207.png"><img style="width:2140px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%207.png"/></a></figure></div></details></div></details><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Modal Split</summary><div class="indented"><p id="1c863b82-6581-8031-8129-f01b4d38f525" class="">Das <strong>Feld Modal Split </strong>bietet verschiedene Ansichten der Modal Split-Daten, die über das Dropdown-Menü ausgewählt werden können. </p><figure id="1c863b82-6581-80d8-9df7-c33a65b5e010" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%208.png"><img style="width:709.970703125px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%208.png"/></a></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-801d-8b24-d60df66c5c14"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_gray.svg"/></div><div style="width:100%"><p id="1c863b82-6581-806a-9553-da31ef87ec81" class="">Der schwarze Klammer am oberen Rand der Modal Split Balke zeigt den Standardabweichungsbereich für die Modal Split Daten an. Je grösser die Standardabweichung desto geringer ist die Präzision der Modal Split-Daten. Die Präzision ergibt hängt wesentlich davon ab wie gross der Anteil des durch den Standort erzeugten Verkehrs am Gesamtverkehr ist. Je mehr ‘anderen’ Verkehr es in dem analysierten Polygon gibt, so schwieriger ist es den Standortverkehr von ‘anderem Verkehr’ zu trennen. Innerstädtische Standorte sind daher schwieriger zu analysieren als alleingelegene Standorte. </p></div></figure><p id="1c863b82-6581-8052-a224-ecfd85adb0aa" class="">Das Dropdown-Menü umfasst:</p><ul id="1c863b82-6581-801c-9253-ecd98dc5c22e" class="bulleted-list"><li style="list-style-type:disc">Trip-basierter Modal Split</li></ul><ul id="1c863b82-6581-8059-8114-c860fe9ec5c0" class="bulleted-list"><li style="list-style-type:disc">Pkm-basierter Modal Split</li></ul><p id="1c863b82-6581-8012-a7ff-ccbc46992e31" class="">Jeweil als Balken- oder Kreisdiagramme</p><p id="1c863b82-6581-8030-b3ad-d84d1b6dccfe" class="">Das Dropdown-Menü enthält ausserdem</p><ul id="1c863b82-6581-8053-9714-d0d510ff7150" class="bulleted-list"><li style="list-style-type:disc">die Gesamtzahl der Trips oder Pkm für jeden Verkehrsträger</li></ul><ul id="1c863b82-6581-8095-bdbb-d31af1770386" class="bulleted-list"><li style="list-style-type:disc">und die Verweilzeiten für den Unternehmensstandort</li></ul><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Verweildaten (Dwell Times)</summary><div class="indented"><figure id="1c863b82-6581-80e7-a4b2-cafdbdfde865" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/Screenshot_2025-02-12_at_11.03.36.png"><img style="width:624px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/Screenshot_2025-02-12_at_11.03.36.png"/></a></figure><p id="1c863b82-6581-8038-9fa2-edb514528f3c" class="">Wir arbeiten mit Mobilitätsdaten, die auf einem 1 km2-Raster aufgetragen sind. Die Verweildauer ist ein zusätzlicher Datensatz, der ebenfalls aus Mobilfunkdaten abgeleitet wird. Die Verweildauerdaten zeigen in einer höheren Auflösung von 100m2, wie viele Personen sich stündlich in der 100m2 Kachel aufhalten.</p><p id="1c863b82-6581-8046-a227-ed945e6f4eb0" class="">Die <mark class="highlight-blue"><strong>Zählungen</strong></mark> in Blau stellen dar, wie viele SIM-Karten innerhalb einer Stunde auf der Kachel gezählt werden. Eine SIM-Karte entspricht etwa einer Person, da nur Handy SIM-Karten gezählt werden. </p><p id="21663b82-6581-8062-a6b2-e219da6c1ea0" class="">Die <mark class="highlight-red"><strong>Verweildichte</strong></mark> zeigt, wie lange eine SIM-Karte/Person sich in der Kachel aufhält. Für diesen Zweck werden SIM-Karten mit der Aufenthaltsdauer multipliziert. Eine SIM-Karte, die sich für eine Stunde in der Kachel befindet, wird mit 1 multipliziert. SIM-Karten, die sich für 30 Minuten in der Kachel befinden, werden mit 0.5 multipliziert, und so weiter.</p><figure class="block-color-default_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-808c-8bca-d3f10e1cc6c8"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-8078-b10e-d96491400121" class="">Der Verweildauerdaten geben eine Indikation, welche Sim-Karten Besuchern zugeordnet werden können (die in der Regel kürzer bleiben) und welche Sim-Karten Mitarbeitern zugeordnet werden können (die in der Regel mehrere Stunden vor Ort bleiben). Die Aufenthaltsdaten sind als gewichtete Aufenthaltsdauer zu verstehen, und sollten nicht direkt als Mitarbeiter/Besucher Zahlen gelesen werden. </p></div></figure><hr id="1c863b82-6581-80d9-8124-fe57703bf2ef"/><p id="1c863b82-6581-808b-ba6c-e0c9f65eb92e" class="">Die Verweildauerdaten sind anonymisiert und nicht mit Mobilitätsdaten verknüpft, um zu verhindern, dass SIM-Karten/Personen verfolgt werden. Vereinfacht kann man sagen das die Verweildauerdaten angeben, wann sich die meisten Personen auf dem Firmengelände aufhalten, und wie lange sich Personen auf dem Gelände aufhalten. Wir nutzen die Verweildaten, um den Pendlerfaktor zu berechnen.</p><p id="21663b82-6581-80b1-bdcd-d4813e322f54" class="">
+</p></div></details><p id="1c863b82-6581-8048-9d40-e1f86e3ea711" class="">
+</p><hr id="1c863b82-6581-8085-906b-d3fd3c61afec"/></div></details><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">Main Commuter Origins (Top-Pendler-Quellorte)</summary><div class="indented"><figure id="1c863b82-6581-80c0-a682-d04e9bd4121b" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%209.png"><img style="width:709.984375px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%209.png"/></a></figure><p id="1c863b82-6581-8008-8cef-f34bab46cf2c" class="">Zeigt die 10 wichtigsten Quellorte zum Standort an. Für jeden Quellort wird angezeigt:</p><ul id="1c863b82-6581-808b-924d-cfbbf814dc0f" class="bulleted-list"><li style="list-style-type:disc">die Gemeinde und die Postleitzahl, aus der die Pendler zum Unternehmensstandort fahren.</li></ul><ul id="1c863b82-6581-80b9-960f-cc353a61155c" class="bulleted-list"><li style="list-style-type:disc">die Anzahl der täglichen Fahrten zwischen der Postleitzahl und dem Standort des Unternehmens.</li></ul><ul id="1c863b82-6581-806b-b00b-d930304e73d2" class="bulleted-list"><li style="list-style-type:disc">wie viel Prozent der gesamten Pendlerfahrten zum Standort auf dieser Strecke stattfinden</li></ul><figure class="block-color-default_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-8041-bf62-c3a34c963624"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-80f3-a338-ccefd23d353c" class="">Die Zahl der täglichen Fahrten ist niedriger als die Zahl der Beschäftigten, die in den Gemeinden wohnen, da nicht alle täglich zur Arbeit kommen. </p></div></figure></div></details><details open=""><summary style="font-weight:600;font-size:1.5em;line-height:1.3;margin:0">ÖV-Quality </summary><div class="indented"><h3 id="1c863b82-6581-80b6-91b2-c509189a6033" class="">ÖV-Quality Karte</h3><figure id="1c863b82-6581-8021-be7c-c442192e756f" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%2010.png"><img style="width:709.9921875px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%2010.png"/></a></figure><p id="1c863b82-6581-80bf-8e07-f64b77ba7b4b" class="">Jede Kachel auf der Karte repräsentiert eine 1km2-Kachel. Farbige Kacheln zeigen an das Leute aus der Kachel zum Standort pendeln. Die Farbe der Kachel zeigt die ÖV-Qualität für die Route von der Kachel zum Standort an. </p><p id="1c863b82-6581-8083-85b8-cc6290cde5a5" class="">Die grünen, gelben und roten Prozentzahlen unter der ÖV-Qualitätskarte zeigen an, wie viel Prozent der Pendler eine gute, mittlere oder schlechte ÖV-Qualität haben. </p><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0"><strong>ÖV-Qualität Definitionen:</strong></summary><div class="indented"><p id="1c863b82-6581-80a4-96f2-ee6415a38cb3" class="">Um die ÖV-Qualität für alle Pendlerwege zum Firmengelände zu ermitteln, vergleichen wir die Fahrzeiten des Autos mit den Fahrzeiten des öffentlichen Verkehrs. </p><ul id="1c863b82-6581-802c-8e54-f2224c36ffb4" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><mark class="highlight-default_background"><strong>Gute ÖV-Qualität</strong></mark></mark><ul id="1c863b82-6581-8095-aabb-d691786a0a70" class="bulleted-list"><li style="list-style-type:circle">die Strecke <ul id="1c863b82-6581-80e8-9542-d94d5eeec9cb" class="bulleted-list"><li style="list-style-type:square">dauert nicht länger als 130% oder 10 Minuten länger als die Reisezeit mit dem Auto.</li></ul><ul id="1c863b82-6581-80c6-b093-efbf880fb57e" class="bulleted-list"><li style="list-style-type:square">erfordert nicht mehr als ein Umsteigen </li></ul></li></ul></li></ul><ul id="1c863b82-6581-8054-9bb5-f6aad6cdcf72" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange"><mark class="highlight-default_background"><strong>Mässige ÖV-Qualität</strong></mark></mark><ul id="1c863b82-6581-80b3-b6f9-cf3c5d21f1f0" class="bulleted-list"><li style="list-style-type:circle">die Strecke <ul id="1c863b82-6581-80b5-b6d1-cbeb8a037464" class="bulleted-list"><li style="list-style-type:square">dauert nicht länger als 200% der Pkw-Reisezeit</li></ul><ul id="1c863b82-6581-80b5-8fc0-e7b2af564180" class="bulleted-list"><li style="list-style-type:square">erfordert nicht mehr als zwei Umstiege </li></ul></li></ul></li></ul><ul id="1c863b82-6581-8037-889c-ec39f5838684" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><mark class="highlight-default_background"><strong>Schlechte ÖV-Qualität</strong></mark></mark><ul id="1c863b82-6581-807d-b98d-dc341da28ba3" class="bulleted-list"><li style="list-style-type:circle">die Strecke <ul id="1c863b82-6581-8001-a620-e5233b694050" class="bulleted-list"><li style="list-style-type:square">dauert länger als 200% der Pkw-Reisezeit</li></ul><ul id="1c863b82-6581-802f-aa15-df4469700720" class="bulleted-list"><li style="list-style-type:square">erfordert mehr als zwei Umstiege</li></ul></li></ul><figure class="block-color-default_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-80a3-b373-cacecbaf7937"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-8029-bc58-d657c321d436" class="">Die Reisezeiten werden derzeit an einem Wochentag um 8 Uhr morgens berechnet. Ausserhalb der Hauptverkehrszeiten können die Reisezeiten anders sein.</p></div></figure><hr id="1c863b82-6581-80fe-b684-da701deb9b73"/><figure class="block-color-default_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-8028-988b-e5e9c1ad7620"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-80c1-9bb8-d1ec0ca66a38" class="">Pendler mit einer guten ÖV-Alternative stellen potenzielle Umsteiger, und damit den potenziellen ÖV-Markt für den Standort dar.</p></div></figure></li></ul><p id="1c863b82-6581-8031-9dfa-c27c3de3c293" class="">
+</p></div></details><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Kachel Details</summary><div class="indented"><figure id="1c863b82-6581-80ba-a0bd-e5d4bdee92ba" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%2011.png"><img style="width:654.0234375px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%2011.png"/></a></figure><p id="1c863b82-6581-80be-bffe-ee32896223ef" class="">Mouseover über eine der Quell-Kacheln zeigt ein Popup mit </p><ul id="1c863b82-6581-80f3-9793-e7306a0c2cc6" class="bulleted-list"><li style="list-style-type:disc">der Anzahl der täglichen Trips, von der Kachel zum Standort </li></ul><ul id="1c863b82-6581-8077-b404-c5bb8d62d1a6" class="bulleted-list"><li style="list-style-type:disc">Reisezeit Zug</li></ul><ul id="1c863b82-6581-809c-9647-eb3ca1ffd2d4" class="bulleted-list"><li style="list-style-type:disc">Reisezeit Auto</li></ul><figure class="block-color-default_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-80ed-9d3c-cc5d80284f02"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/></div><div style="width:100%"><p id="1c863b82-6581-80aa-aa91-d03d8a319264" class="">Die Schaltfläche <strong>Google Maps Route</strong> zeigt die Verbindung von der Kachel zum Unternehmensstandort auf Google Maps an. Dadurch kann die ÖV-Qualität auf Wunsch manuell bestätigt werden.</p></div></figure></div></details><details open=""><summary style="font-weight:600;font-size:1.25em;line-height:1.3;margin:0">Massnahmen zur Verbesserung der ÖV-Qualität simulieren</summary><div class="indented"><figure id="1c863b82-6581-8002-8e1a-ee09d2df12d9" class="image"><a href="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%2012.png"><img style="width:2126px" src="../General/31b06c9baebe4719a558ec2a11f5ae9e/Data%20Projects/USER%20GUIDE/image%2012.png"/></a></figure><p id="1c863b82-6581-808e-a156-d315ad07ebc4" class="">Mit den Checkboxen oberhalb der ÖV-Qualitätskarte können Sie simulieren, wie bestimmte Massnahmen die ÖV-Qualität für Pendler zum Standorts verbessern würden. Sie können mehrere Massnahmen kombinieren. Die Wirkung der simulierten Massnahmen spiegelt sich in den Prozentsätzen für gute, gute und schlechte ÖV-Qualität sowie in der Karte wider. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1c863b82-6581-8045-a574-dcfd8f9f5f08"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_gray.svg"/></div><div style="width:100%"><p id="1c863b82-6581-8053-9fa1-c1c40099c22f" class=""><strong>Beispiel: </strong>Kacheln, die eine rote ÖV-Qualität aufweisen, weil der Weg vom nächsten Bahnhof zum Standort sehr lang ist, können beispielsweise von gelb auf grün wechseln, wenn eine letzte Meile simuliert wird, die die Reise vom Bahnhof zum Standort schneller macht.</p></div></figure><p id="1c863b82-6581-8009-b9b8-f62ff603d757" class=""><strong>Status quo</strong></p><p id="1c863b82-6581-80dc-a734-d4aa9edf7c76" class="">Berechnet die ÖV-Qualität basierend auf den aktuell verfügbaren Verbindungen. </p><p id="1c863b82-6581-80b6-bc09-d6b5b836a32b" class=""><strong>Letzte Meile</strong></p><p id="1c863b82-6581-8009-a1e7-ca93d8d5d1e2" class="">Simuliert, wie sich die ÖV-Qualität verändert, wenn an der nächstgelegenen ÖV-Haltestelle Last-Mile-Dienste wie häufige Shuttlebusse oder Bike- und Scooter-Sharing-Stationen eingeführt würden.</p><p id="1c863b82-6581-802c-86c9-ed7ca606e96a" class=""><strong>Fahrrad (Bicycle)</strong></p><p id="1c863b82-6581-80ad-9688-f0125417b4e4" class="">Geht davon aus, dass Personen, die innerhalb eines bestimmten Radius wohnen, mit dem Fahrrad zur Arbeit fahren könnten, wenn die Anreize stimmen. </p><ul id="1c863b82-6581-8029-b997-e06f9ce1109d" class="bulleted-list"><li style="list-style-type:disc">Pendler, die im Umkreis von 5 km um den Standort wohnen, gelten als grün, da sie problemlos mit dem Fahrrad zur Arbeit fahren könnten. </li></ul><ul id="1c863b82-6581-8038-96da-f7fc60e447d7" class="bulleted-list"><li style="list-style-type:disc">Pendler, die in einem Umkreis von 10 km wohnen, werden als gelb eingestuft, weil es ein erhebliches Engagement erfordert, mit dem Fahrrad zu pendeln. </li></ul><p id="1c863b82-6581-80f8-90d1-d9213440e0cd" class="">Die Fahrradinfrastruktur wird bei der Berechnung derzeit nicht berücksichtigt.</p><p id="1c863b82-6581-807b-b1bc-f567b03d9e50" class=""><strong>Arbeiten (Working)</strong></p><p id="1c863b82-6581-804c-af87-c48a3dd2e4a4" class="">Arbeiten, geht davon aus, dass Unternehmen ihren Mitarbeitern erlauben, Zugpendelzeit als Arbeitszeit zu deklarieren, für Zugfahrten, die mindestens 20 Minuten ohne Umsteigen dauern. Dies macht das Pendeln mit der Bahn für Arbeitnehmer mit längeren Arbeitswegen attraktiv.</p></div></details></div></details></div><hr id="2b163b82-6581-811d-9ab3-f4cf07557c04"/><div><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="2b163b82-6581-8119-bcf2-d86f8ed69c55"><div style="font-size:1.5em"><img class="icon notion-static-icon" src="https://www.notion.so/icons/playback-fast-forward_gray.svg"/></div><div style="width:100%"><p id="2b163b82-6581-8151-b43e-eee8fc0f9b55" class=""><strong>Weiterlesen…</strong></p><p id="2b163b82-6581-8156-ad8c-d17e870b4c50" class=""><strong>Home</strong> <a href="https://www.notion.so/Kanton-Z-rich-Mobilit-tsdatenanalyse-2b163b826581814d9805eb3843b6a44c?pvs=21">Startseite</a></p><p id="2b163b82-6581-8157-9ce7-f784d96606e7" class="">
+</p><p id="2b163b82-6581-8019-8163-fd65d0513ce2" class=""><strong>Einleitung</strong></p><p id="2b163b82-6581-81a4-a6a5-cbc18ed105d4" class=""><a href="https://www.notion.so/Einleitung-2b163b82658180b1a6e6d630d4eb7deb?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/book_red.svg"/>Einleitung</a> </p><hr id="2b163b82-6581-817c-8cc7-e3a0b45cbad5"/><p id="2b163b82-6581-8081-bf39-e9c21c278965" class=""><strong>Schlüsselergebnisse</strong></p><p id="2b163b82-6581-8044-9f7e-d144610f7d1c" class=""><a href="https://www.notion.so/ADD-TITLE-FINAL-PRESENTATION-2b163b8265818147bcb8d54d7e1bdd1c?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/book_red.svg"/>ADD TITLE FINAL PRESENTATION</a> </p><hr id="2b163b82-6581-806b-9d7a-e364966e83f5"/><p id="2b163b82-6581-806d-a6eb-c17093b59f56" class=""><strong>Ist-Analyse</strong></p><p id="2b163b82-6581-800d-97f6-f0f5e31aad77" class=""><a href="https://www.notion.so/Pacer-Dashboard-2b163b82658181cdaae3c224229e7380?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/book_red.svg"/>Pacer Dashboard</a> </p><hr id="2b163b82-6581-804c-9aba-e669b0c8aa56"/><p id="2b163b82-6581-80e5-aa98-c23d84bb3cbf" class=""><strong>Top Verkehrshotspots</strong></p><p id="2b163b82-6581-8082-b063-f63a4ac0ae5f" class=""><a href="https://www.notion.so/Hotspot-Dashboards-2b163b8265818181b5edee5b6e4744f9?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/book_red.svg"/>Hotspot Dashboards</a> </p><p id="2b163b82-6581-8019-a242-df57b23bbc33" class=""><a href="Verkehrshotspots%20User%20Guide%202b163b82658181889162d1f3b9a0be75.html"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/>Verkehrshotspots: User Guide</a> </p><hr id="2b163b82-6581-80cf-bab8-c8acdd360cf0"/><p id="2b163b82-6581-805e-b663-fc13fc0826a8" class=""><strong>Top Verkehrsknoten</strong></p><p id="2b163b82-6581-8011-a45b-c857941fe4cf" class=""><a href="https://www.notion.so/Knoten-Dashboards-2b163b82658181e08ad6ca008afb40ba?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/book_red.svg"/>Knoten Dashboards</a> </p><hr id="2b163b82-6581-80ad-99ca-ffb080e88463"/><p id="2b163b82-6581-8195-b8c8-fc5cfa18b002" class=""><strong>Appendix</strong></p><p id="2b163b82-6581-8156-b8cb-e9b03af992be" class=""><a href="Verkehrshotspots%20User%20Guide%202b163b82658181889162d1f3b9a0be75.html"><img class="icon notion-static-icon" src="https://www.notion.so/icons/info-alternate_red.svg"/>Verkehrshotspots: User Guide</a> </p><p id="2b163b82-6581-819b-9221-c2e2d0d28e55" class=""><a href="https://www.notion.so/Datenlage-2b163b826581815ea207d520fcb3ea9a?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/chemistry_red.svg"/>Datenlage</a> </p><p id="2b163b82-6581-8199-9d6d-c654ff682e0e" class=""><a href="https://www.notion.so/Plausibilisierung-Region-Glattal-2b163b826581817bb1e7c59e758a0a30?pvs=21"><img class="icon notion-static-icon" src="https://www.notion.so/icons/chemistry_red.svg"/>Plausibilisierung: Region Glattal</a> </p></div></figure></div><hr id="2b163b82-6581-81c3-9cbb-ff2a1f94cd18"/><div><p id="2b163b82-6581-801b-b983-fd19be414760" class=""><a href="https://www.42hacks.com/">42hacks</a> © 2025 All rights reserved.</p></div><p id="2b163b82-6581-8179-b351-d05e531bb839" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

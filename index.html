@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RBS LPS Dashboard</title>
+  <title>RBS LPS-Dashboard</title>
   <style>
     :root {
       --bg: linear-gradient(135deg, #0f172a, #111827);
@@ -42,14 +42,17 @@
       backdrop-filter: blur(6px);
       overflow: hidden;
     }
-    .view-shell { margin: 0 24px 12px; padding: 0; background: none; border: none; box-shadow: none; }
-    .view-tabs { display: inline-flex; gap: 6px; padding: 0; border-radius: 999px; background: none; }
     .tabs-shell { margin: 0 24px 16px; }
     .tabs {
       display: flex;
       gap: 10px;
       padding: 14px 18px;
       flex-wrap: wrap;
+    }
+    .sub-tabs {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+      margin-top: -4px;
     }
     .tab {
       padding: 10px 14px;
@@ -66,6 +69,17 @@
       color: #0b1021;
       box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
     }
+    .view-tabs .tab.active,
+    .sub-tabs .tab.active {
+      background: #ffffff;
+      color: #0b1021;
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+    }
+    .view-tabs-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     .container { padding: 22px 28px 40px; display: grid; gap: 26px; }
     .panel-title {
       display: flex;
@@ -76,6 +90,16 @@
       font-weight: 700;
       letter-spacing: 0.2px;
       height: 68px; /* fixed height so map and treemap bodies start aligned */
+    }
+    .panel-heading-main {
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .panel-heading-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
     }
     .main-layout { display: grid; gap: 16px; }
     .split-layout {
@@ -89,8 +113,11 @@
     .overview-frame { height: 340px; }
     .map { height: 520px; }
     .od-panel { height: 520px; position: relative; }
-    .sankey { height: 760px; position: relative; padding: 18px 20px 22px; }
-    .segmented {
+    .sankey { height: 900px; position: relative; padding: 18px 20px 22px; }
+    .segmented,
+    .scenario-tabs,
+    #lps-subtabs,
+    #hotspot-subtabs {
       display: inline-flex;
       gap: 8px;
       padding: 6px;
@@ -112,9 +139,9 @@
     }
     .pill:hover { background: rgba(255, 255, 255, 0.12); }
     .pill.active {
-      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      background: #ffffff;
       color: #0b1021;
-      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
     }
     .frame-wrap {
       box-sizing: border-box;
@@ -133,8 +160,18 @@
       background: #ffffff;
       border-radius: 12px;
     }
+    .sankey .frame-wrap {
+      padding: 0;
+    }
+    .sankey .frame-wrap iframe {
+      width: 120%;
+      height: 120%;
+      transform: scale(0.85);
+      transform-origin: top left;
+      border-radius: 18px;
+    }
     .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-    .validation { padding: 18px 20px 22px; }
+    .validation, .hotspots, .documentation { padding: 18px 20px 22px; }
     .validation-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -142,6 +179,131 @@
       margin-top: 8px;
     }
     .val-frame { height: 520px; }
+    .documentation-body,
+    .hotspots-body {
+      margin-top: 8px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+      display: grid;
+      gap: 12px;
+    }
+    .documentation-body {
+      width: min(60%, 1400px);
+      margin: 0 auto;
+    }
+    .hotspots-body {
+      width: 100%;
+      margin: 8px 0;
+    }
+    .documentation-body h3,
+    .documentation-body h4,
+    .hotspots-body h3,
+    .hotspots-body h4 {
+      color: var(--text);
+      margin: 16px 0 4px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .documentation-body h3:first-child,
+    .hotspots-body h3:first-child { margin-top: 0; }
+    .documentation-body img,
+    .hotspots-body img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .documentation-body code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .hotspot-guide-body {
+      width: min(60%, 1400px);
+      margin: 0 auto;
+    }
+    .hotspot-guide-body img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .guide-callout {
+      border-left: 3px solid var(--accent);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 16px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+    .guide-callout strong { color: var(--text); }
+    .guide-callout p { margin: 6px 0 0; }
+    .hotspot-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .hotspot-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: grid;
+      gap: 12px;
+    }
+    .hotspot-card iframe {
+      width: 100%;
+      height: 420px;
+      border: none;
+      border-radius: 12px;
+      background: #fff;
+      object-fit: cover;
+    }
+    .hotspot-card.hotspot-map iframe { height: 819px; }
+    .hotspot-card img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .hotspot-dashboard-section {
+      margin-top: 20px;
+      display: grid;
+      gap: 12px;
+    }
+    .hotspot-select {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-weight: 600;
+      width: min(360px, 100%);
+    }
+    .hotspot-iframe-wrap {
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    #hotspot-iframe {
+      width: 100%;
+      height: 1200px;
+      border: none;
+      display: block;
+    }
+    .validation .frame-wrap {
+      padding: 0;
+    }
+    .validation .frame-wrap iframe {
+      border-radius: 12px;
+    }
+    .validation-cards {
+      margin-top: 8px;
+    }
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -161,6 +323,24 @@
     .metric-line { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.92rem; }
     .metric-notes { margin-top: 12px; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
     .metric-notes strong { color: var(--text); }
+    .insight-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .insight-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: grid;
+      gap: 4px;
+    }
+    .insight-card strong {
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
     .hidden { display: none !important; }
     @media (max-width: 900px) {
       .sankey { height: 520px; }
@@ -174,90 +354,292 @@
 </head>
 <body>
   <header>
-    <h1>RBS LPS Dashboard</h1>
-    <p class="subtitle">Explore demand vs transformed demand, stop and OD flows across service variants.</p>
+    <h1 data-tooltip-id="app-title">RBS Korridor Analyse</h1>
+    <p class="subtitle" data-tooltip-id="app-subtitle">Potentiale für die Linie RE5/S8</p>
   </header>
 
-  <div class="surface tabs-shell">
-    <div class="tabs" id="family-tabs"></div>
-  </div>
-
-  <div class="view-shell">
-    <div class="view-tabs">
-      <button class="pill" id="view-dashboard">Dashboard</button>
-      <button class="pill" id="view-validation">Validation</button>
+  <div class="surface tabs-shell view-tabs-shell">
+    <div class="tabs view-tabs">
+      <button class="tab" id="view-lps" data-tooltip-id="view-lps">Line Potential Score</button>
+      <button class="tab" id="view-hotspots" data-tooltip-id="view-hotspots">Verkehrshotspots</button>
+    </div>
+    <div class="tabs sub-tabs" id="lps-subtabs">
+      <button class="tab" id="lps-dashboard" data-tooltip-id="lps-dashboard">Szenarios</button>
+      <button class="tab" id="lps-validation" data-tooltip-id="lps-validation">Validierung</button>
+      <button class="tab" id="lps-documentation" data-tooltip-id="lps-documentation">Dokumentation</button>
+    </div>
+    <div class="tabs sub-tabs hidden" id="hotspot-subtabs">
+      <button class="tab" id="hotspot-main" data-tooltip-id="hotspot-main">Hotspots</button>
+      <button class="tab" id="hotspot-guide" data-tooltip-id="hotspot-guide">User Guide</button>
     </div>
   </div>
 
   <div class="container" id="dashboard-container">
     <div class="surface overview">
-      <div class="panel-title">
-        <span>Line Potential Score Comparison</span>
-      </div>
-      <div class="overview-frame">
-        <div class="frame-wrap">
-          <iframe src="charts/RBS_LPS_Comparison.html" title="LPS comparison"></iframe>
+      <div class="panel-title" data-tooltip-id="line-potential-panel">
+        <div>
+          <div class="panel-heading-main">Szenario Benchmarking</div>
+          <div class="panel-heading-sub">Line Potential Score Vergleich für die vier evaluierten Szenarios</div>
         </div>
       </div>
+      <div class="insight-cards" style="margin-top:0;">
+        <div class="insight-card">
+          <strong>+27&nbsp;% Fahrgäste</strong>
+          <span>RE5 + Halt Worblaufen &amp; Zollikofen</span>
+        </div>
+        <div class="insight-card">
+          <strong>+13&nbsp;% Fahrgäste</strong>
+          <span>RE5 + Halt Worblaufen oder Zollikofen</span>
+        </div>
+      </div>
+      <div class="overview-frame" style="margin-top: 12px;">
+        <div class="frame-wrap">
+          <iframe src="charts/RBS_LPS_Comparison.html" title="LPS-Vergleich"></iframe>
+        </div>
+      </div>
+      <p class="panel-heading-sub" style="margin-top:8px;">Das Szenario mit Halt in Worblaufen und Zollikhofen schneidet am besten ab, mit bis zu 27% mehr Fahrgästen pro Werktag. Die Szenarios mit Halt in Worblaufen oder Zollikofen scoren bis zu 13% mehr Fahrgäste pro Werktag.</p>
+    </div>
+
+    <div class="surface overview">
+      <div class="panel-title">
+        <div>
+          <div class="panel-heading-main">Szenario Analyse</div>
+          <div class="panel-heading-sub">Wähle ein Szenario</div>
+        </div>
+      </div>
+      <div class="tabs scenario-tabs" id="family-tabs" data-tooltip-id="family-tabs"></div>
     </div>
 
     <div class="surface split-layout">
       <div class="panel map-panel">
-        <div class="panel-title">Service Map</div>
+        <div class="panel-title" data-tooltip-id="service-map-panel">Linienführung</div>
         <div class="map">
           <div class="frame-wrap">
-            <iframe id="service-map" title="Service map"></iframe>
+            <iframe id="service-map" title="Linienführung"></iframe>
           </div>
         </div>
       </div>
       <div class="panel od-panel">
-        <div class="panel-title">
-          <span>OD Treemap</span>
+        <div class="panel-title" data-tooltip-id="od-panel">
+          <span>Quell-Ziel (QZ) Treemap</span>
           <div class="segmented">
-            <button class="pill" id="od-stop">Stop OD</button>
-            <button class="pill" id="od-town">Town OD</button>
+            <button class="pill" id="od-stop" data-tooltip-id="od-stop">QZ-Haltestellen</button>
+            <button class="pill" id="od-town" data-tooltip-id="od-town">QZ-Gemeinden</button>
           </div>
         </div>
         <div class="frame-wrap">
-          <iframe id="od-frame" title="OD treemap"></iframe>
+          <iframe id="od-frame" title="Quell-Ziel Treemap"></iframe>
         </div>
       </div>
     </div>
 
     <div class="surface sankey">
-      <div class="panel-title">
-        <span>Demand Flow (Sankey)</span>
+      <div class="panel-title" data-tooltip-id="sankey-panel">
+        <span>ÖV-Nachfrage über den RE5 Korridor</span>
         <div class="segmented">
-          <button class="pill" id="mode-lps">LPS (umgewandelte Nachfrage)</button>
-          <button class="pill" id="mode-total">Total Demand (Nachfrage)</button>
+          <button class="pill" id="mode-lps" data-tooltip-id="mode-lps">Gewichtete Nachfrage (LPS)</button>
+          <button class="pill" id="mode-total" data-tooltip-id="mode-total">Gesamtnachfrage</button>
         </div>
       </div>
       <div class="frame-wrap">
-        <iframe id="sankey-frame" title="Demand flow"></iframe>
+        <iframe id="sankey-frame" title="ÖV-Nachfrage über den RE5 Korridor"></iframe>
       </div>
     </div>
   </div>
 
   <div class="container hidden" id="validation-container">
     <div class="surface validation">
-      <div class="panel-title">
-        <span>Validation</span>
+      <div class="panel-title" data-tooltip-id="validation-panel">
+        <span>Validierung</span>
+      </div>
+      <div class="insight-cards validation-cards">
+        <div class="insight-card">
+          <strong>R² XX</strong>
+          <span>Hohe Korrelation der FADA Einsteigerzahlen mit der 42hacks LPS Berechnung.</span>
+        </div>
       </div>
       <div class="validation-grid">
         <div class="frame-wrap val-frame">
-          <iframe src="charts/Einsteiger_RBS_LPS_vs_ground_truth.html" title="Einsteiger vs Ground Truth"></iframe>
+          <iframe src="charts/Einsteiger_RBS_LPS_vs_ground_truth.html" title="Einsteiger vs. Referenzwerte"></iframe>
         </div>
         <div class="frame-wrap val-frame">
-          <iframe src="charts/Austeiger_RBS_LPS_vs_ground_truth.html" title="Austeiger vs Ground Truth"></iframe>
+          <iframe src="charts/Austeiger_RBS_LPS_vs_ground_truth.html" title="Aussteiger vs. Referenzwerte"></iframe>
         </div>
       </div>
-      <div class="metrics-grid" id="metrics-grid"></div>
+      <div class="metrics-grid" id="metrics-grid" data-tooltip-id="metrics-grid"></div>
       <div class="metric-notes">
-        <div><strong>R²</strong>: overall fit (1.0 = perfect alignment).</div>
-        <div><strong>Slope</strong>: bias of predicted vs. observed (1.0 = unbiased).</div>
-        <div><strong>MAE</strong>: average absolute error in passengers.</div>
-        <div><strong>MSE</strong>: squared error; penalizes larger misses.</div>
-        <div><strong>n</strong>: number of stops used in the fit.</div>
+        <div><strong>R²</strong>: Gesamtgüte (1.0 = perfekte Übereinstimmung).</div>
+        <div><strong>Slope</strong>: Verzerrung von Prognose vs. Beobachtung (1.0 = unverzerrt).</div>
+        <div><strong>MAE</strong>: mittlere absolute Abweichung in Passagieren.</div>
+        <div><strong>MSE</strong>: quadrierter Fehler; bestraft grosse Ausreisser stärker.</div>
+        <div><strong>n</strong>: Anzahl Haltestellen in der Regression.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container hidden" id="hotspots-container">
+    <div class="surface hotspots">
+      <div class="panel-title" data-tooltip-id="hotspots-panel">
+        <span>Verkehrshotspots</span>
+      </div>
+      <div class="hotspots-body">
+        <h3>Hotspot Überblick</h3>
+        <div class="hotspot-cards">
+          <div class="hotspot-card hotspot-map">
+            <h4>RBS Geschäftsgebiet: Top Hotspots</h4>
+            <iframe src="charts/RBS_hotspots_n_clusters.html" title="Top Hotspots"></iframe>
+          </div>
+          <div class="hotspot-card">
+            <h4>Hotspots als Umsatztreiber für den RE5?</h4>
+            <div class="insight-card hotspot-metric">
+              <strong>+XX Hotspot Pendlern</strong>
+              <span>bietet der Korridor RE5 eine gute oder sehr gute ÖV-Alternative zur Autofahrt.</span>
+            </div>
+            <img src="assets/RBS_Korridor_Hotspotpotential.png" alt="Hotspot-Potenzial" />
+          </div>
+        </div>
+
+        <div class="hotspot-dashboard-section">
+          <div>
+            <h3>Hotspot Dashboards</h3>
+            <p class="panel-heading-sub">Wähle einen Hotspot zur Analyse aus</p>
+          </div>
+          <select id="hotspot-select" class="hotspot-select" data-tooltip-id="hotspot-main"></select>
+          <div class="hotspot-iframe-wrap">
+            <iframe id="hotspot-iframe" title="Hotspot Dashboard"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container hidden" id="hotspot-guide-container">
+    <div class="surface hotspots">
+      <div class="panel-title">
+        <span>User Guide</span>
+      </div>
+      <div class="hotspots-body hotspot-guide-body">
+        <p>Die priorisierten Arbeitgeber-Verkehrshotspots werden im 42hacks Company Cockpit dargestellt. Dieser Guide begleitet dich Schritt für Schritt durch die Detailansichten des Company Cockpit. Für jeden Standort werden Mitarbeitende, ÖV-Qualität, Trip- und Pkm-basierte Modal Splits sowie die gesamten Pkm pro Werktag angezeigt.</p>
+
+        <h3>Detailansicht</h3>
+        <p>Die Detailansicht liefert sämtliche Mobilitäts-Insights zu einem Standort.</p>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_07.png" alt="Key Daten" />
+          <figcaption>Key Daten eines Unternehmensstandorts.</figcaption>
+        </figure>
+
+        <h4>Employees (Mitarbeiter)</h4>
+        <p>Die Beschäftigtenzahlen stammen aus der STATENT-Erhebung und liegen auf einem Raster von 100&nbsp;m².</p>
+        <div class="guide-callout">
+          <p>Die Werte sind für das Gesamtgebiet zuverlässig, lassen sich aber nicht immer exakt auf ein einzelnes Gebäude abbilden.</p>
+        </div>
+        <div class="guide-callout">
+          <p>Prüfe die STATENT-Punkte über die Karte <strong>Company Site: Employees</strong>, um die Quelle der Mitarbeiterzahlen zu validieren.</p>
+        </div>
+
+        <h4>Daily Commuters</h4>
+        <p>Tägliche Pendler pro Tag verwenden den geschätzten Pendlerfaktor, um zu bestimmen, wie viele Mitarbeitende an einem Arbeitstag vor Ort sind.</p>
+        <div class="guide-callout">
+          <p>Die Zahl der Tagespendler unterscheidet sich von der Zahl der Beschäftigten, da nicht alle Mitarbeitenden täglich pendeln.</p>
+        </div>
+
+        <h4>Pkm per day</h4>
+        <p>Zeigt die Personenkilometer, die Mitarbeitende pro Arbeitstag zum Standort zurücklegen. Basis ist ebenfalls der Pendlerfaktor.</p>
+
+        <h4>Potential New Revenue</h4>
+        <p>Schätzt den zusätzlichen Umsatz, der entstehen könnte, wenn Auto-Pendler mit guter ÖV-Alternative auf den ÖV wechseln.</p>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_08.png" alt="Potenzial Neuumsatz" />
+        </figure>
+
+        <h4>Modal Split Trend</h4>
+        <p>Zeigt, wie sich der ÖV-Anteil gegenüber dem Vorjahr verändert hat.</p>
+
+        <h3>Standortkarte</h3>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_09.png" alt="Standortkarte" />
+        </figure>
+        <p>Das Polygon markiert den analysierten Bereich. Die STATENT-Punkte zeigen, welche Daten in die Standortanalyse eingeflossen sind.</p>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_10.png" alt="Company Site Location" />
+        </figure>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_11.png" alt="Company Site Employees" />
+        </figure>
+
+        <h3>Modal Split</h3>
+        <p>Das Modal-Split-Feld bietet Trip- oder Pkm-basierte Ansichten als Balken- und Kreisdiagramme inklusive absoluter Werte und Verweildauern.</p>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_12.png" alt="Modal Split Visualisierung" />
+        </figure>
+        <div class="guide-callout">
+          <p>Die schwarze Klammer am oberen Rand zeigt die Standardabweichung: je größer, desto unsicherer ist der Modal Split.</p>
+        </div>
+        <div class="guide-callout">
+          <strong>Verweildaten (Dwell Times)</strong>
+          <figure>
+            <img src="assets/hotspots_guide/hotspot_01.png" alt="Verweildauerdaten" />
+          </figure>
+          <p>Blaue Zahlen zeigen gezählte SIM-Karten pro Stunde, rote Werte die gewichtete Verweildichte. Daraus wird der Pendlerfaktor berechnet.</p>
+        </div>
+
+        <h3>Main Commuter Origins</h3>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_13.png" alt="Top Pendlerquellorte" />
+        </figure>
+        <p>Listet die wichtigsten Quellgemeinden inklusive täglicher Fahrten und Anteil am Gesamtverkehr.</p>
+
+        <h3>ÖV-Quality</h3>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_03.png" alt="ÖV-Quality Karte" />
+        </figure>
+        <p>Die Kachelfarben zeigen, wie gut die ÖV-Verbindung im Vergleich zum Auto ist.</p>
+        <ul>
+          <li><strong>Gut:</strong> &le;130&nbsp;% der Pkw-Zeit und höchstens ein Umstieg.</li>
+          <li><strong>Mittel:</strong> &le;200&nbsp;% der Pkw-Zeit und höchstens zwei Umstiege.</li>
+          <li><strong>Schwach:</strong> &gt;200&nbsp;% der Pkw-Zeit oder mehr als zwei Umstiege.</li>
+        </ul>
+        <div class="guide-callout">
+          <p>Pendler mit einer guten ÖV-Alternative stellen den potenziellen ÖV-Markt für den Standort dar.</p>
+        </div>
+
+        <h3>Kacheldetails</h3>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_04.png" alt="Kacheldetails" />
+        </figure>
+        <p>Mouseover über eine Kachel zeigt Trips pro Tag, Reisezeiten Zug/Auto sowie den Link zur Google-Maps-Route.</p>
+
+        <h3>Massnahmen simulieren</h3>
+        <figure>
+          <img src="assets/hotspots_guide/hotspot_05.png" alt="OV-Qualität Simulation" />
+        </figure>
+        <p>Mit den Checkboxen kannst du Status quo, Letzte Meile, Fahrrad und Working simulieren und deren Einfluss auf die ÖV-Qualität messen.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container hidden" id="documentation-container">
+    <div class="surface documentation">
+      <div class="panel-title" data-tooltip-id="documentation-panel">
+        <span>Dokumentation</span>
+      </div>
+      <div class="documentation-body">
+        <h3>Line Potential Score (LPS)</h3>
+        <p>Der LPS ist ein Indikator für die wahrscheinliche Nutzung einer Linie. Um den LPS einer neuen Linie zu ermitteln, vergleichen wir für jeden nachgefragten Trip die Reisezeit mit dem Auto, mit der Reise im bestehenden ÖV-Netzwerk (Vorher) sowie im modifizierten ÖV-Netzwerk (Nachher). Aus der vergleichenden Analyse dieser drei Szenarien (Auto / ÖV-Vorher / ÖV-Nachher) ergibt sich die Nutzungswahrscheinlichkeit für die neue Linie.</p>
+        <p>Für bestehende Linien verfahren wir analog: Wir routen die Nachfrage sowohl über das aktuelle ÖV-Netz als auch über eine virtuelle Version ohne die betrachtete Linie. Aus der resultierenden Veränderung der Reisezeiten leiten wir das Nutzungspotenzial der bestehenden Linie ab.</p>
+        <p>Für jedes Szenario routen wir alle Trips, die für die Linie relevant sein könnten. Dies umfasst sowohl Trips innerhalb der Region als auch alle Fahrten, die in der Region starten oder enden.</p>
+        <img src="assets/LPS_explained2.png" alt="Visualisierung des LPS-Prozesses Schritt 1" />
+        <img src="assets/LPS_explained3.png" alt="Visualisierung des LPS-Prozesses Schritt 2" />
+        <h3>Szenarien</h3>
+        <p>Für die Linie RE5 wurde evaluiert, wie viele zusätzliche Fahrgäste zu erwarten sind, wenn der RE5 zusätzliche Halte in Zollikofen und/oder Worblaufen einführen würde. Zu diesem Zweck wurden vier Szenarien analysiert. Um diese Szenarien bewerten zu können, wurde die Gesamtnachfrage – also alle nachgefragten Trips – für jedes Szenario über das ÖV-Netz geroutet. Zusätzlich wurden sämtliche nachgefragten Trips über das Strassennetzwerk geroutet, um für jeden Trip eine MIV-Referenzreisezeit zu erhalten.</p>
+        <img src="assets/RBSCorridoranalyse.png" alt="Vergleich der RE5-Szenarien" />
+        <h4>Autoszenario (MIV Benchmark)</h4>
+        <p>MIV-Reisezeiten pro Trip für alle nachgefragten Fahrten.</p>
+        <h4>Szenario A (ÖV-Benchmark)</h4>
+        <p>Szenario A misst den LPS für alle nachgefragten Trips ohne den bestehenden RE5, um ein neutrales Referenzszenario zu schaffen, gegen das sowohl der bestehende RE5 als auch die neuen Varianten verglichen werden können.</p>
+        <h4>Szenarien B (Modifizierte ÖV-Angebote)</h4>
+        <p>RE5 Bestand<br />RE5 + Halt Worblaufen<br />RE5 + Halt Zollikofen<br />RE5 + Halt Worblaufen &amp; Zollikofen</p>
+        <p><strong>Hinweis:</strong> Die Tabs <em>RE5 Bestand, RE5 + Halt Worblaufen, RE5 + Halt Zollikofen, RE5 + Halt Worblaufen &amp; Zollikofen</em> oben aktualisieren die eingebetteten Karten und Diagramme. Um Tooltips anzupassen, bearbeite <code>data/tooltips.csv</code> und lade das Dashboard neu.</p>
       </div>
     </div>
   </div>
@@ -265,10 +647,10 @@
   <script>
     // Families available and their display names.
     const FAMILY_OPTIONS = [
-      { id: "Both_RE5", label: "Both RE5" },
-      { id: "Worblaufen_RE5", label: "Worblaufen RE5" },
-      { id: "Zollikofen_RE5", label: "Zollikofen RE5" },
-      { id: "RE5", label: "RE5" },
+      { id: "RE5", label: "RE5 Bestand" },
+      { id: "Worblaufen_RE5", label: "RE5 + Halt Worblaufen" },
+      { id: "Zollikofen_RE5", label: "RE5 + Halt Zollikofen" },
+      { id: "Both_RE5", label: "RE5 + Halt Worblaufen & Zollikofen" },
     ];
 
     // Time suffix used for the line charts.
@@ -302,14 +684,64 @@
       },
     };
 
+    const HOTSPOT_DASHBOARDS = [
+      { name: "Hotspot Bürgerspital Solothurn Cluster - Solothurn", place: "Solothurn", url: "https://sbb.ov42.com/modal_split/bürgerspital_solothurn_cluster_solothurn_34784240" },
+      { name: "Hotspot Cluster Solothurn Baseltor - Solothurn", place: "Solothurn", url: "https://sbb.ov42.com/modal_split/cluster_solothurn_baseltor_solothurn_34867705-34784250" },
+      { name: "Hotspot Solothurn Süd Cluster - Solothurn", place: "Solothurn", url: "https://sbb.ov42.com/modal_split/solothurn_süd_cluster_solothurn_34951260-34867705" },
+      { name: "Hotspot Cluster Ostermundigen Ost - Ostermundigen", place: "Ostermundigen", url: "https://sbb.ov42.com/modal_split/cluster_ostermundigen_ost_ostermundigen_32326820-32407275" },
+      { name: "Hotspot Cluster Ostermundigen West - Ostermundigen", place: "Ostermundigen", url: "https://sbb.ov42.com/modal_split/cluster_ostermundigen_west_ostermundigen_32246465" },
+      { name: "Hotspot Cluster UPD - Ostermundigen", place: "Ostermundigen", url: "https://sbb.ov42.com/modal_split/cluster_upd_ostermundigen_32326830" },
+      { name: "Hotspot Cluster Schönbühl - Schönbühl", place: "Schönbühl", url: "https://sbb.ov42.com/modal_split/cluster_schönbühl_schönbühl_32892175-32973330" },
+      { name: "Hotspot Cluster Shoppyland - Schönbühl", place: "Schönbühl", url: "https://sbb.ov42.com/modal_split/cluster_shoppyland_schönbühl_32811110-32892175-32811120" },
+      { name: "Hotspot Cluster Wankdorf - Wankdorf", place: "Wankdorf", url: "https://sbb.ov42.com/modal_split/cluster_wankdorf_wankdorf_32246475-32326840-32166220-32246485" },
+      { name: "Hotspot Cluster Worb (RBS) - Worb", place: "Worb", url: "https://sbb.ov42.com/modal_split/cluster_worb_(rbs)_worb_32568465-32487810-32487800-32407245" },
+      { name: "Hotspot Cluster Worblaufen - Worblaufen", place: "Worblaufen", url: "https://sbb.ov42.com/modal_split/cluster_worblaufen_worblaufen_32326850" },
+      { name: "Hotspot Papiermühle Ost - Ittigen", place: "Ittigen", url: "https://sbb.ov42.com/modal_split/papiermühle_ost_ittigen_32326840-32407295" },
+      { name: "Hotspot Papiermühle West - Ittigen", place: "Ittigen", url: "https://sbb.ov42.com/modal_split/papiermühle_west_ittigen_32326840-32407305" },
+      { name: "Hotspot Zollikofen Bundesämter Cluster - Zollikofen", place: "Zollikofen", url: "https://sbb.ov42.com/modal_split/zollikofen_bundesämter_cluster_zollikofen_32487880" }
+    ];
+    const HOTSPOT_PLACE_ORDER = ["Solothurn", "Ostermundigen", "Schönbühl", "Wankdorf", "Worb", "Worblaufen", "Ittigen", "Zollikofen"];
+    HOTSPOT_DASHBOARDS.sort((a, b) => {
+      const placeDelta = HOTSPOT_PLACE_ORDER.indexOf(a.place) - HOTSPOT_PLACE_ORDER.indexOf(b.place);
+      if (placeDelta !== 0) return placeDelta;
+      return a.name.localeCompare(b.name, "de");
+    });
+    const TOOLTIP_FALLBACK = new Map([
+      ["app-title", "Einstiegspunkt in das RBS Line Potential Score-Dashboard."],
+      ["app-subtitle", "Beschreibt kurz, welche Analysen im Dashboard möglich sind."],
+      ["family-tabs", "Wähle die gewünschte RE5-Variante, um alle Ansichten zu aktualisieren."],
+      ["view-lps", "Hauptansicht mit Analyse-, Validierungs- und Dokumentationsunterseiten (Line Potential Score)."],
+      ["view-hotspots", "Öffnet eine textliche Übersicht über priorisierte Verkehrshotspots."],
+      ["hotspot-main", "Übersicht der priorisierten Hotspots."],
+      ["hotspot-guide", "Kurzanleitung zur Nutzung der Hotspot-Ansicht."],
+      ["lps-dashboard", "Analytische LPS-Szenarios mit Karten, Treemaps und Flussdiagrammen."],
+      ["lps-validation", "Wechselt zur Validierungsunterseite mit Qualitätskennzahlen."],
+      ["lps-documentation", "Zeigt Hinweise zur Methode und Pflege des Dashboards."],
+      ["line-potential-panel", "Vergleicht beobachtete und transformierte Nachfrage für die gewählte Linie."],
+      ["service-map-panel", "Zeigt die Linienführung mit den Layers aus dem Map-Frame."],
+      ["od-panel", "Quell-Ziel-Treemap zur Zusammensetzung der Flüsse."],
+      ["od-stop", "QZ-Flüsse auf Haltestellenebene hervorheben."],
+      ["od-town", "QZ-Flüsse aggregiert nach Gemeinden hervorheben."],
+      ["sankey-panel", "ÖV-Nachfrage über den RE5-Korridor visualisiert."],
+      ["mode-lps", "Alle Trips mit gutem LPS (wahrscheinliche Nutzung)."],
+      ["mode-total", "Routing aller nachgefragten Trips über den ÖV."],
+      ["validation-panel", "Validierungsbereich mit Regressions-Checks."],
+      ["hotspots-panel", "Textuelle Erläuterungen zu priorisierten Verkehrskorridoren."],
+      ["documentation-panel", "Informationen zur Bedienung und Pflege des Dashboards."],
+      ["metrics-grid", "Wichtige Kenngrössen (R², Steigung, MAE etc.) pro Regression."],
+    ]);
+
     const state = {
-      view: "dashboard",
+      view: "lps",
+      lpsSection: "dashboard",
+      hotspotSection: "main",
+      hotspot: HOTSPOT_DASHBOARDS[0]?.url || "",
       family: FAMILY_OPTIONS[0].id,
       mode: "lps", // "lps" uses logit_... (transformed demand), "total" uses raw demand
       odView: "stop", // "stop" or "town"
     };
 
-    const tabsShell = document.querySelector(".tabs-shell");
+    const familyTabsShell = document.querySelector(".family-tabs-shell");
     const tabsEl = document.getElementById("family-tabs");
     const mapFrame = document.getElementById("service-map");
     const sankeyFrame = document.getElementById("sankey-frame");
@@ -318,10 +750,22 @@
     const odTownBtn = document.getElementById("od-town");
     const modeLpsBtn = document.getElementById("mode-lps");
     const modeTotalBtn = document.getElementById("mode-total");
-    const viewDashboardBtn = document.getElementById("view-dashboard");
-    const viewValidationBtn = document.getElementById("view-validation");
+    const viewLpsBtn = document.getElementById("view-lps");
+    const viewHotspotsBtn = document.getElementById("view-hotspots");
+    const lpsSubtabs = document.getElementById("lps-subtabs");
+    const hotspotSubtabs = document.getElementById("hotspot-subtabs");
+    const lpsDashboardBtn = document.getElementById("lps-dashboard");
+    const lpsValidationBtn = document.getElementById("lps-validation");
+    const lpsDocumentationBtn = document.getElementById("lps-documentation");
+    const hotspotMainBtn = document.getElementById("hotspot-main");
+    const hotspotGuideBtn = document.getElementById("hotspot-guide");
     const dashboardContainer = document.getElementById("dashboard-container");
     const validationContainer = document.getElementById("validation-container");
+    const hotspotsContainer = document.getElementById("hotspots-container");
+    const hotspotGuideContainer = document.getElementById("hotspot-guide-container");
+    const hotspotSelect = document.getElementById("hotspot-select");
+    const hotspotIframe = document.getElementById("hotspot-iframe");
+    const documentationContainer = document.getElementById("documentation-container");
     const metricsGrid = document.getElementById("metrics-grid");
 
     function chartPath(kind) {
@@ -341,10 +785,11 @@
     }
 
     function renderTabs() {
+      if (!tabsEl) return;
       tabsEl.innerHTML = "";
       FAMILY_OPTIONS.forEach((fam) => {
         const btn = document.createElement("button");
-        btn.className = `tab${fam.id === state.family ? " active" : ""}`;
+        btn.className = `pill${fam.id === state.family ? " active" : ""}`;
         btn.textContent = fam.label;
         btn.onclick = () => {
           state.family = fam.id;
@@ -353,6 +798,41 @@
         };
         tabsEl.appendChild(btn);
       });
+    }
+
+    function escapeRegExp(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+    function formatHotspotLabel(item) {
+      const suffix = new RegExp(`\\s*-\\s*${escapeRegExp(item.place)}$`, "i");
+      return item.name.replace(suffix, "").trim();
+    }
+
+    function renderHotspotOptions() {
+      if (!hotspotSelect) return;
+      const groups = HOTSPOT_PLACE_ORDER
+        .map((place) => ({
+          place,
+          items: HOTSPOT_DASHBOARDS.filter((item) => item.place === place),
+        }))
+        .filter((group) => group.items.length);
+      hotspotSelect.innerHTML = groups.map(({ place, items }) => `
+        <optgroup label="${place}">
+          ${items.map((item) => `<option value="${item.url}">${formatHotspotLabel(item)}</option>`).join("")}
+        </optgroup>
+      `).join("");
+      if (state.hotspot) {
+        hotspotSelect.value = state.hotspot;
+      }
+    }
+
+    function updateHotspotFrame() {
+      if (hotspotIframe && state.hotspot) {
+        hotspotIframe.src = state.hotspot;
+      }
+      if (hotspotSelect) {
+        hotspotSelect.value = state.hotspot;
+      }
     }
 
     function loadFrames() {
@@ -365,17 +845,50 @@
       odTownBtn.classList.toggle("active", state.odView === "town");
     }
 
+    function refreshView() {
+      const isLps = state.view === "lps";
+      const showDashboard = isLps && state.lpsSection === "dashboard";
+      const showValidation = isLps && state.lpsSection === "validation";
+      const showDocumentation = isLps && state.lpsSection === "documentation";
+      const showHotspotsMain = state.view === "hotspots" && state.hotspotSection === "main";
+      const showHotspotsGuide = state.view === "hotspots" && state.hotspotSection === "guide";
+      viewLpsBtn.classList.toggle("active", isLps);
+      viewHotspotsBtn.classList.toggle("active", !isLps);
+      lpsSubtabs.classList.toggle("hidden", !isLps);
+      hotspotSubtabs.classList.toggle("hidden", state.view !== "hotspots");
+      dashboardContainer.classList.toggle("hidden", !showDashboard);
+      validationContainer.classList.toggle("hidden", !showValidation);
+      documentationContainer.classList.toggle("hidden", !showDocumentation);
+      hotspotsContainer.classList.toggle("hidden", !showHotspotsMain);
+      hotspotGuideContainer.classList.toggle("hidden", !showHotspotsGuide);
+      familyTabsShell.classList.toggle("hidden", !showDashboard);
+      lpsDashboardBtn.classList.toggle("active", showDashboard);
+      lpsValidationBtn.classList.toggle("active", showValidation);
+      lpsDocumentationBtn.classList.toggle("active", showDocumentation);
+      hotspotMainBtn.classList.toggle("active", showHotspotsMain);
+      hotspotGuideBtn.classList.toggle("active", showHotspotsGuide);
+    }
+
     function setView(view) {
       state.view = view;
-      const isDashboard = view === "dashboard";
-      viewDashboardBtn.classList.toggle("active", isDashboard);
-      viewValidationBtn.classList.toggle("active", !isDashboard);
-      dashboardContainer.classList.toggle("hidden", !isDashboard);
-      validationContainer.classList.toggle("hidden", isDashboard);
-      tabsShell.classList.toggle("hidden", !isDashboard);
-      if (isDashboard) {
+      refreshView();
+      if (view === "lps") {
+        if (state.lpsSection === "dashboard") {
+          loadFrames();
+        } else if (state.lpsSection === "validation" && !metricsGrid.dataset.loaded) {
+          loadValidationMetrics();
+        }
+      } else if (view === "hotspots") {
+        updateHotspotFrame();
+      }
+    }
+
+    function setLpsSection(section) {
+      state.lpsSection = section;
+      refreshView();
+      if (section === "dashboard") {
         loadFrames();
-      } else if (!metricsGrid.dataset.loaded) {
+      } else if (section === "validation" && !metricsGrid.dataset.loaded) {
         loadValidationMetrics();
       }
     }
@@ -399,6 +912,88 @@
         </div>
       `).join("");
       metricsGrid.dataset.loaded = "true";
+    }
+
+    function splitCsvLine(line) {
+      const cells = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i += 1) {
+        const char = line[i];
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i += 1;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          cells.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      cells.push(current);
+      return cells;
+    }
+
+    function parseTooltipCsv(text) {
+      if (!text) return new Map();
+      const lines = text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+      if (!lines.length) return new Map();
+      const rows = lines.map((line) => splitCsvLine(line));
+      const header = rows[0].map((value) => value.trim().toLowerCase());
+      const idIndex = header.indexOf("element_id");
+      const tooltipIndex = header.indexOf("tooltip");
+      if (idIndex === -1 || tooltipIndex === -1) return new Map();
+      const map = new Map();
+      for (let i = 1; i < rows.length; i += 1) {
+        const row = rows[i];
+        const elementId = (row[idIndex] ?? "").trim();
+        const tooltip = (row[tooltipIndex] ?? "").trim();
+        if (elementId) {
+          map.set(elementId, tooltip);
+        }
+      }
+      return map;
+    }
+
+    function applyTooltipMap(map) {
+      document.querySelectorAll("[data-tooltip-id]").forEach((el) => {
+        const tooltip = (map.get(el.dataset.tooltipId) || "").trim();
+        if (tooltip) {
+          el.setAttribute("title", tooltip);
+        } else {
+          el.removeAttribute("title");
+        }
+      });
+    }
+
+    function applyTooltipText(text) {
+      const map = parseTooltipCsv(text);
+      if (!map.size) {
+        console.warn("Tooltip CSV missing headers or entries; using embedded defaults.");
+        applyTooltipMap(TOOLTIP_FALLBACK);
+        return;
+      }
+      applyTooltipMap(map);
+    }
+
+    async function loadTooltipData() {
+      try {
+        const cacheBuster = Date.now();
+        const res = await fetch(`data/tooltips.csv?cb=${cacheBuster}`, { cache: "no-cache" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const csvText = await res.text();
+        applyTooltipText(csvText);
+      } catch (err) {
+        console.warn("Falling back to embedded tooltips:", err);
+        applyTooltipMap(TOOLTIP_FALLBACK);
+      }
     }
 
     async function loadValidationMetrics() {
@@ -439,12 +1034,34 @@
       loadFrames();
     });
 
-    viewDashboardBtn.addEventListener("click", () => setView("dashboard"));
-    viewValidationBtn.addEventListener("click", () => setView("validation"));
+    viewLpsBtn.addEventListener("click", () => setView("lps"));
+    viewHotspotsBtn.addEventListener("click", () => setView("hotspots"));
+    lpsDashboardBtn.addEventListener("click", () => setLpsSection("dashboard"));
+    lpsValidationBtn.addEventListener("click", () => setLpsSection("validation"));
+    lpsDocumentationBtn.addEventListener("click", () => setLpsSection("documentation"));
+    hotspotMainBtn.addEventListener("click", () => {
+      state.hotspotSection = "main";
+      refreshView();
+    });
+    hotspotGuideBtn.addEventListener("click", () => {
+      state.hotspotSection = "guide";
+      refreshView();
+    });
+    hotspotSelect?.addEventListener("change", (e) => {
+      state.hotspot = e.target.value;
+      updateHotspotFrame();
+    });
 
     renderTabs();
+    renderHotspotOptions();
+    updateHotspotFrame();
     loadFrames();
-    setView("dashboard");
+    refreshView();
+    loadTooltipData();
   </script>
+  <footer style="text-align:center; color: var(--muted); font-size: 0.85rem; margin: 32px 0;">
+    <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin-bottom: 12px;" />
+    powered by <a href="https://42hack.com" style="color: var(--accent); text-decoration: none;">42hack.com</a>
+  </footer>
 </body>
 </html>
