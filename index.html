@@ -178,7 +178,16 @@
       gap: 16px;
       margin-top: 8px;
     }
-    .val-frame { height: 520px; }
+    .val-frame {
+      height: 520px;
+      padding: 0;
+    }
+    .val-frame iframe {
+      width: 110%;
+      height: 110%;
+      transform: scale(0.92);
+      transform-origin: top left;
+    }
     .documentation-body,
     .hotspots-body {
       margin-top: 8px;
@@ -263,6 +272,12 @@
       object-fit: cover;
     }
     .hotspot-card.hotspot-map iframe { height: 819px; }
+    .hotspot-card.hotspot-embed-card iframe {
+      width: 120%;
+      height: 120%;
+      transform: scale(0.85);
+      transform-origin: top left;
+    }
     .hotspot-card img {
       width: 100%;
       border-radius: 12px;
@@ -454,8 +469,8 @@
       </div>
       <div class="insight-cards validation-cards">
         <div class="insight-card">
-          <strong>R² XX</strong>
-          <span>Hohe Korrelation der FADA Einsteigerzahlen mit der 42hacks LPS Berechnung.</span>
+          <strong>R² 98</strong>
+          <span>98% gemittelte Korrelation der FADA Einsteigerzahlen mit der 42hacks LPS Berechnung.</span>
         </div>
       </div>
       <div class="validation-grid">
@@ -489,13 +504,13 @@
             <h4>RBS Geschäftsgebiet: Top Hotspots</h4>
             <iframe src="charts/RBS_hotspots_n_clusters.html" title="Top Hotspots"></iframe>
           </div>
-          <div class="hotspot-card">
+          <div class="hotspot-card hotspot-embed-card">
             <h4>Hotspots als Umsatztreiber für den RE5?</h4>
             <div class="insight-card hotspot-metric">
               <strong>+XX Hotspot Pendlern</strong>
               <span>bietet der Korridor RE5 eine gute oder sehr gute ÖV-Alternative zur Autofahrt.</span>
             </div>
-            <img src="assets/RBS_Korridor_Hotspotpotential.png" alt="Hotspot-Potenzial" />
+            <iframe src="assets/ov_vs_miv_clusters.html" title="OV vs MIV Cluster"></iframe>
           </div>
         </div>
 
@@ -893,7 +908,7 @@
       }
     }
 
-    function renderMetrics(data) {
+    function renderMetrics(data, markLoaded = true) {
       const rows = [
         { title: "Einsteiger (r1)", m: data.r1.metrics.Einsteiger },
         { title: "Aussteiger (r1)", m: data.r1.metrics.Aussteiger },
@@ -911,7 +926,9 @@
           <div class="metric-line"><span>MSE</span><span>${fmt(m.MSE, 1)}</span></div>
         </div>
       `).join("");
-      metricsGrid.dataset.loaded = "true";
+      if (markLoaded) {
+        metricsGrid.dataset.loaded = "true";
+      }
     }
 
     function splitCsvLine(line) {
@@ -1053,6 +1070,7 @@
     });
 
     renderTabs();
+    renderMetrics(METRIC_FALLBACK, false);
     renderHotspotOptions();
     updateHotspotFrame();
     loadFrames();
